@@ -1,0 +1,9 @@
+parameters:
+    locale: en
+
+mongodb:
+    username: 'mongo_client'
+    password: 'qwerty1234'
+    host:     'localhost'
+    port:     27017
+    database: 'mongo_shell'

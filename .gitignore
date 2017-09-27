@@ -1,2 +1,5 @@
-
 /vendor/
+/composer.phar
+/composer.lock
+/app/config/config.yml
+/logs/*.log

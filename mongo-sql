@@ -1,0 +1,4 @@
+#!/usr/bin/php -q
+<?php
+
+require __DIR__ . '/console.php';
