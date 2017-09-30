@@ -30,6 +30,6 @@ class MongoShellController extends Controller
         $mongoClient = $this->container->get('mongo.client_handler');
         $queryResult = $mongoClient->query($mongoQueryParams);
 
-        print_r($queryResult);
+        return $queryResult;
     }
 }

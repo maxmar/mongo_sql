@@ -42,7 +42,7 @@ class MongoClientHandler
 
         $result = [];
         foreach ($cursor as $document) {
-            $result[] = json_encode($document);
+            $result[] = $document;
         }
 
         return $result;

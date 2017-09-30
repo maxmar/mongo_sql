@@ -31,7 +31,7 @@ class MongoPatternsRepository
             'method' => 'prepareWhere',
             'key' => 'where',
             'params' => [
-                'pattern' => '/^(\w+|\w+\.\w+)(\s*(=|<>|>|>=|<|<=)\s*)(\'\w+\'|\d+|\d+\.\d+)$/',
+                'pattern' => '/^(\w+|\w+\.\w+)(\s*(=|<>|>|>=|<|<=)\s*)(\'.+?\'|\d+|\d+\.\d+)$/',
                 'field_name_index' => 1,
                 'comparison_operator_index' => 3,
                 'comparison_argument_index' => 4,
