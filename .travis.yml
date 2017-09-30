@@ -4,8 +4,8 @@ php:
   - hhvm
   - nightly
 
-#services:
-#  - mongodb
+services:
+  - mongodb
 
 before_script:
   - composer install
