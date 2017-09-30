@@ -15,7 +15,11 @@
     "autoload": {
         "psr-4": {
             "MongoSQL\\": "src/MongoSQL/",
+            "MongoSQL\\Tests\\": "tests/MongoSQL/",
             "Core\\": "core/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2"
     }
 }
