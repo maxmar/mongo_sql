@@ -13,9 +13,9 @@ while ($row = fgets($stdin)) {
 
             $shellController = $container->get('mongo.shell');
 
-            echo $shellController->console($row);
+            $result = $shellController->console($row);
         } catch (Exception $e) {
-            echo $e->getMessage();
+            $result = $e->getMessage();
         }
 
         echo PHP_EOL;

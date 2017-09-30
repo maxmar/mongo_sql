@@ -4,6 +4,7 @@ namespace MongoSQL\Handlers;
 
 use MongoDB\Client;
 use MongoDB\Database;
+use MongoSQL\Repository\MongoParamsEntity;
 
 class MongoClientHandler
 {
@@ -23,13 +24,27 @@ class MongoClientHandler
         $this->db = $this->mongoClient->selectDatabase($database);
     }
 
-    public function testConnection()
+    public function query(MongoParamsEntity $mongoParamsEntity)
     {
-        $cursor = $this->db->inventory->find(
-            []
-            ,['projection' => ['instock.qty' => 1,]]
+        $collection = $mongoParamsEntity->getCollection();
+
+        $cursor = $this->db->{$collection}->find(
+            $mongoParamsEntity->getFilter(),
+            [
+                'projection' => $mongoParamsEntity->getFields(),
+                'sort' => $mongoParamsEntity->getSort(),
+                'skip' => $mongoParamsEntity->getSkip(),
+                'limit' => $mongoParamsEntity->getLimit(),
+            ]
         );
 
-        var_dump($cursor->toArray());
+        $cursor->setTypeMap(['root' => 'array']);
+
+        $result = [];
+        foreach ($cursor as $document) {
+            $result[] = json_encode($document);
+        }
+
+        return $result;
     }
 }

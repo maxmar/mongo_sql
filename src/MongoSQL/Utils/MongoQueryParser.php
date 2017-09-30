@@ -17,13 +17,13 @@ class MongoQueryParser
     }
 
     /**
-     * @param $query
-     * @param $mainPattern
+     * @param string $query
+     * @param string $mainPattern
      * @param array $patternParams
      * @return MongoParamsEntity
      * @throws \Exception
      */
-    public function parseQuery($query, $mainPattern, $patternParams = [])
+    public function parseQuery(string $query, string $mainPattern, array $patternParams = []): MongoParamsEntity
     {
         preg_match($mainPattern, $query, $matches);
 
@@ -58,11 +58,11 @@ class MongoQueryParser
     }
 
     /**
-     * @param $value
+     * @param string $value
      * @param array $params
      * @throws \Exception
      */
-    private function prepareFields($value, $params = [])
+    private function prepareFields(string $value, array $params = [])
     {
         $validationPattern = $params['pattern'];
 
@@ -85,72 +85,41 @@ class MongoQueryParser
                 $field = str_replace($allSubfieldsMarker, '', $field);
                 $fieldsResultList[$field] = $showFieldMarker;
             }
+
+            if (!key_exists('_id', $fieldsResultList)) {
+                $fieldsResultList['_id'] = 0;
+            }
         }
 
         $this->mongoParams->setFields($fieldsResultList);
     }
 
     /**
-     * @param $value
+     * @param string $value
      * @param array $params
      */
-    private function prepareCollection($value, $params = [])
+    private function prepareCollection(string $value, array $params = [])
     {
         $this->mongoParams->setCollection($value);
     }
 
     /**
-     * @param $value
+     * @param string $value
      * @param array $params
      */
-    private function prepareWhere($value, $params = [])
+    private function prepareWhere(string $value, array $params = [])
     {
         $logicalOperatorsList = $params['logical_operators'];
-//        $logicalOperatorsList = $params['logical_operators'];
 
-        $filtersList = $this->parseFilterStatements($value, $logicalOperatorsList);
+        $filtersList = $this->parseFilterStatements($value, $logicalOperatorsList, $params);
 
-        print_r($filtersList);
-
-        // id = 10 OR name = 'Mark' AND a
-
-//        $arrFind = array(
-//            '$or' => array(
-//                array(
-//                    '$and'  => array(
-//                        array(
-//                            UI_name     => array(
-//                                '$regex'    => 'andrew',
-//                                '$options'  => 'i'
-//                            )
-//                        ),
-//                        array(
-//                            UI_surname  => array(
-//                                '$regex' => 'mik',
-//                                '$options'  => 'i'
-//                            )
-//                        )
-//                    )
-//                ),
-//                array(
-//                    array(
-//                        UI_name  => array(
-//                            '$regex' => 'mik',
-//                            '$options'  => 'i'
-//                        )
-//                    )
-//                ),
-//            )
-//        );
-
-
-        $this->mongoParams->setFilter($value);
+        $this->mongoParams->setFilter($filtersList);
     }
 
-    private function parseFilterStatements($value, $logicalOperatorsList)
+    private function parseFilterStatements(string $value, array $logicalOperatorsList, array $params = [])
     {
         if (!$logicalOperatorsList) {
-            return [$value];
+            return $this->parseFilterComparison($value, $params);
         }
 
         $logicalOperator = array_shift($logicalOperatorsList);
@@ -165,21 +134,60 @@ class MongoQueryParser
             $result = [];
             foreach ($statements as $statement) {
                 $statement = trim($statement);
-                $result[$mongoLogicalAlias][] = $this->parseFilterStatements($statement, $logicalOperatorsList);
+                $result[$mongoLogicalAlias][] = $this->parseFilterStatements($statement, $logicalOperatorsList, $params);
             }
 
             return $result;
         } else {
-            return $this->parseFilterStatements($value, $logicalOperatorsList);
+            return $this->parseFilterStatements($value, $logicalOperatorsList, $params);
         }
     }
 
+    private function parseFilterComparison(string $value, array $params = [])
+    {
+        $comparisonPattern = $params['pattern'];
+        preg_match($comparisonPattern, $value, $matches);
+
+        if (!$matches) {
+            throw new \Exception('Invalid WHERE condition: '. $value);
+        }
+
+        $fieldNameIndex = $params['field_name_index'];
+        $comparisonOperatorIndex = $params['comparison_operator_index'];
+        $comparisonArgumentIndex = $params['comparison_argument_index'];
+        $comparisonOperatorsList = $params['comparison_operators'];
+
+        $fieldName = $matches[$fieldNameIndex];
+        $comparisonOperator = $matches[$comparisonOperatorIndex];
+        $comparisonArgument = $matches[$comparisonArgumentIndex];
+
+        if (!array_key_exists($comparisonOperator, $comparisonOperatorsList)) {
+            throw new \Exception('Invalid comparison operator: '. $value);
+        }
+
+        $comparisonOperator = $comparisonOperatorsList[$comparisonOperator];
+
+        if (strpos($comparisonArgument, '\'') !== false) {
+            $comparisonArgument = str_replace('\'', '', $comparisonArgument);
+        } elseif (strpos($comparisonArgument, '.') !== false) {
+            $comparisonArgument = floatval($comparisonArgument);
+        } else {
+            $comparisonArgument = intval($comparisonArgument);
+        }
+
+        return [
+            $fieldName => [
+                $comparisonOperator => $comparisonArgument
+            ]
+        ];
+    }
+
     /**
-     * @param $value
+     * @param string $value
      * @param array $params
      * @throws \Exception
      */
-    private function prepareOrderBy($value, $params = [])
+    private function prepareOrderBy(string $value, array $params = [])
     {
         $sortParams = explode(',', $value);
 
@@ -212,19 +220,19 @@ class MongoQueryParser
     }
 
     /**
-     * @param $value
+     * @param int $value
      * @param array $params
      */
-    private function prepareSkip($value, $params = [])
+    private function prepareSkip(int $value, array $params = [])
     {
         $this->mongoParams->setSkip($value);
     }
 
     /**
-     * @param $value
+     * @param int $value
      * @param array $params
      */
-    private function prepareLimit($value, $params = [])
+    private function prepareLimit(int $value, array $params = [])
     {
         $this->mongoParams->setLimit($value);
     }

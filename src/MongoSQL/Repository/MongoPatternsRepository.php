@@ -31,9 +31,10 @@ class MongoPatternsRepository
             'method' => 'prepareWhere',
             'key' => 'where',
             'params' => [
-                'pattern' => '/^(\w+|\w+\.\w+)(\s*(=|<>|>|>=|<|<=)(\w+|\w+\.\w+)\s*)(\w+|\w+\.\w+)$/',
-//                'field_name_index' => 2,
-//                'sort_type_index' => 4,
+                'pattern' => '/^(\w+|\w+\.\w+)(\s*(=|<>|>|>=|<|<=)\s*)(\'\w+\'|\d+|\d+\.\d+)$/',
+                'field_name_index' => 1,
+                'comparison_operator_index' => 3,
+                'comparison_argument_index' => 4,
                 'logical_operators' => [ // sort by priority
                     [
                         'sql' => 'OR',
@@ -43,7 +44,15 @@ class MongoPatternsRepository
                         'sql' => 'AND',
                         'mongo' => '$and',
                     ],
-                ]
+                ],
+                'comparison_operators' => [
+                    '=' => '$eq',
+                    '<>' => '$ne',
+                    '>' => '$gt',
+                    '>=' => '$gte',
+                    '<' => '$lt',
+                    '<=' => '$lte',
+                ],
             ]
         ],
         [

@@ -35,7 +35,7 @@ class MongoParamsEntity
     private $limit = 0;
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getFields()
     {
@@ -43,15 +43,15 @@ class MongoParamsEntity
     }
 
     /**
-     * @param mixed $fields
+     * @param array $fields
      */
-    public function setFields($fields)
+    public function setFields(array $fields)
     {
         $this->fields = $fields;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCollection()
     {
@@ -59,9 +59,9 @@ class MongoParamsEntity
     }
 
     /**
-     * @param mixed $collection
+     * @param string $collection
      */
-    public function setCollection($collection)
+    public function setCollection(string $collection)
     {
         $this->collection = $collection;
     }
@@ -77,7 +77,7 @@ class MongoParamsEntity
     /**
      * @param array $filter
      */
-    public function setFilter($filter)
+    public function setFilter(array $filter)
     {
         $this->filter = $filter;
     }
@@ -93,13 +93,13 @@ class MongoParamsEntity
     /**
      * @param array $sort
      */
-    public function setSort($sort)
+    public function setSort(array $sort)
     {
         $this->sort = $sort;
     }
 
     /**
-     * @return null
+     * @return int
      */
     public function getSkip()
     {
@@ -107,15 +107,15 @@ class MongoParamsEntity
     }
 
     /**
-     * @param null $skip
+     * @param int $skip
      */
-    public function setSkip($skip)
+    public function setSkip(int $skip)
     {
         $this->skip = $skip;
     }
 
     /**
-     * @return null
+     * @return int
      */
     public function getLimit()
     {
@@ -123,9 +123,9 @@ class MongoParamsEntity
     }
 
     /**
-     * @param null $limit
+     * @param int $limit
      */
-    public function setLimit($limit)
+    public function setLimit(int $limit)
     {
         $this->limit = $limit;
     }
