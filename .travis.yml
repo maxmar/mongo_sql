@@ -10,7 +10,7 @@ services:
   - mongodb
 
 before_script:
-  - ./mongo-php-driver-installer.sh
+  - phpenv config-add myconfig.ini
   - composer install
 
 script: phpunit --configuration phpunit.xml
